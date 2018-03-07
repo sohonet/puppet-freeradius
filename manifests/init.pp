@@ -340,7 +340,11 @@ class freeradius (
 
   # Syslog rules
   if $syslog == true {
-    rsyslog::snippet { '12-radiusd-log':
+    file { '/etc/rsyslog.d/12-radiusd-log':
+      notify  => Service[rsyslog], # from Sohonet logging module
+      mode    => '0600',
+      owner   => 'root',
+      group   => 'root',
       content => "if \$programname == \'radiusd\' then ${freeradius::fr_logpath}/radius.log\n&~",
     }
   }
@@ -363,38 +367,8 @@ class freeradius (
     }
   }
 
-  logrotate::rule { 'radacct':
-    path          => "${freeradius::fr_logpath}/radacct/*/*.log",
-    rotate_every  => 'day',
-    rotate        => 7,
-    create        => false,
-    missingok     => true,
-    compress      => true,
-    postrotate    => "kill -HUP `cat ${freeradius::fr_pidfile}`",
-    sharedscripts => true,
-  }
-
-  logrotate::rule { 'checkrad':
-    path          => "${freeradius::fr_logpath}/checkrad.log",
-    rotate_every  => 'week',
-    rotate        => 1,
-    create        => true,
-    missingok     => true,
-    compress      => true,
-    postrotate    => "kill -HUP `cat ${freeradius::fr_pidfile}`",
-    sharedscripts => true,
-  }
-
-  logrotate::rule { 'radiusd':
-    path          => "${freeradius::fr_logpath}/radius*.log",
-    rotate_every  => 'week',
-    rotate        => 26,
-    create        => true,
-    missingok     => true,
-    compress      => true,
-    postrotate    => "kill -HUP `cat ${freeradius::fr_pidfile}`",
-    sharedscripts => true,
-  }
+  # Logroate stuff not required because the Debian 9+ package installs the
+  # upstream recommended logroate file into /etc/logrotate.d/freeradius
 
   # Placeholder resource for dh and random as they are dynamically generated, so they
   # exist in the catalogue and don't get purged
