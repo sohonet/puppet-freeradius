@@ -540,6 +540,10 @@ $INCLUDE proxy.conf
 #
 $INCLUDE ${confdir}/clients.d/
 
+<% if @extra_client_dir %>
+# An extra clients directory to load config from:
+$INCLUDE <%= @extra_client_dir %>
+<% end %>
 
 # THREAD POOL CONFIGURATION
 #
