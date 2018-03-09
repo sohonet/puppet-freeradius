@@ -313,7 +313,7 @@ class freeradius (
   # Syslog rules
   if $syslog == true {
     file { '/etc/rsyslog.d/12-radiusd-log':
-      notify  => Service[rsyslog], # from Sohonet logging module
+      #notify  => Service[rsyslog], # from Sohonet logging module
       mode    => '0600',
       owner   => 'root',
       group   => 'root',
