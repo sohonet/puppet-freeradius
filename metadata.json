@@ -50,7 +50,7 @@
     },
     {
       "name": "puppet/logrotate",
-      "version_range": ">=1.4.0"
+      "version_range": ">=1.4.0 <3.3.0"
     },
     {
       "name": "puppetlabs/concat",
