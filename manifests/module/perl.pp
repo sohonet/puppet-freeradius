@@ -3,24 +3,24 @@
 # Create the perl module configuration for FreeRADIUS
 #
 define freeradius::module::perl (
-  $ensure                              = file,
-  String $moddir                       = "${fr_moduleconfigpath}/perl",
+  $ensure                              = 'present',
+  String $moddir                       = "${modconfdir}/${.:instance}",
   Optional[String] $key                = undef,
   Optional[String] $perl_filename      = undef,
-  Optional[String] $path               = undef,
+  Optional[String] $source             = undef,
   Optional[String] $content            = undef,
 ) {
   $fr_moduleconfigpath = $::freeradius::params::fr_moduleconfigpath
   $fr_group            = $::freeradius::params::fr_group
   $fr_service          = $::freeradius::params::fr_service
-  $source              = "${path}/${perl_filename}"
+
   freeradius::module {'perl':
     ensure  => $ensure,
     content => template('freeradius/perl.erb'),
   }
 
-  file { "${fr_moduleconfigpath}/perl/${perl_filename}":
-    ensure  => file,
+  file { "$moddir/$perl_filename":
+    ensure  => $ensure,
     owner   => 'root',
     group   => $fr_group,
     mode    => '0640',
