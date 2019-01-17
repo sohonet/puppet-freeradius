@@ -4,7 +4,7 @@
 #
 define freeradius::module::perl (
   $ensure                              = 'present',
-  String $moddir                       = "\${modconfdir}/\${.:instance}",
+  String $moddir                       = "${modconfdir}/${.:instance}",
   Optional[String] $key                = undef,
   Optional[String] $perl_filename      = undef,
   Optional[String] $source             = undef,
@@ -19,18 +19,13 @@ define freeradius::module::perl (
     content => template('freeradius/perl.erb'),
   }
 
-  $manage_dir = $ensure ? {
-    'present' => 'directory',
-    default   => 'absent',
-  }
-
   file { "$moddir/$perl_filename":
     ensure  => $ensure,
     owner   => 'root',
     group   => $fr_group,
     mode    => '0640',
     source  => $source,
-    content => $manage_content,
+    content => $content,
     require => Freeradius::Module['perl'],
     notify  => Service[$fr_service],
   }
