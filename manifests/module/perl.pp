@@ -4,7 +4,7 @@
 #
 define freeradius::module::perl (
   $ensure                              = 'present',
-  String $moddir                       = "${fr_moduleconfigpath}/${name}/",
+  String $moddir                       = "${fr_moduleconfigpath}/perl",
   Optional[String] $key                = undef,
   Optional[String] $perl_filename      = undef,
   Optional[String] $source             = "${fr_moduleconfigpath}/${name}/",
