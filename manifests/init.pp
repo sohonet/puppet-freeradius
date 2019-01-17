@@ -1,24 +1,26 @@
 # Base class to install FreeRADIUS
 class freeradius (
-  $control_socket  = false,
-  $max_servers     = '4096',
-  $max_requests    = '4096',
-  $mysql_support   = false,
-  $pgsql_support   = false,
-  $perl_support    = false,
-  $utils_support   = false,
-  $ldap_support    = false,
-  $krb5_support    = false,
-  $wpa_supplicant  = false,
-  $winbind_support = false,
-  $log_destination = 'files',
-  $syslog          = false,
-  $log_auth        = 'no',
-  $preserve_mods   = true,
-  $correct_escapes = true,
-  $manage_logpath  = true,
-  $package_ensure  = 'installed',
-  $radacctdir      = $freeradius::params::radacctdir,
+  $control_socket   = false,
+  $max_servers      = '4096',
+  $max_requests     = '4096',
+  $mysql_support    = false,
+  $pgsql_support    = false,
+  $perl_support     = false,
+  $utils_support    = false,
+  $ldap_support     = false,
+  $dhcp_support     = false,
+  $krb5_support     = false,
+  $wpa_supplicant   = false,
+  $winbind_support  = false,
+  $log_destination  = 'files',
+  $syslog           = false,
+  $log_auth         = 'no',
+  $preserve_mods    = true,
+  $correct_escapes  = true,
+  $manage_logpath   = true,
+  $package_ensure   = 'installed',
+  $radacctdir       = $freeradius::params::radacctdir,
+  $extra_client_dir = undef,
 ) inherits freeradius::params {
 
   if $freeradius::fr_version !~ /^3/ {
@@ -96,7 +98,6 @@ class freeradius (
       'chap',
       'detail',
       'detail.log',
-      'dhcp',
       'digest',
       'dynamic_clients',
       'echo',
@@ -261,6 +262,11 @@ class freeradius (
       ensure => $package_ensure,
     }
   }
+  if $dhcp_support {
+    package { 'freeradius-dhcp':
+      ensure => $package_ensure,
+    }
+  }
   if $krb5_support {
     package { 'freeradius-krb5':
       ensure => $package_ensure,
@@ -306,7 +312,11 @@ class freeradius (
 
   # Syslog rules
   if $syslog == true {
-    rsyslog::snippet { '12-radiusd-log':
+    file { '/etc/rsyslog.d/12-radiusd-log':
+      #notify  => Service[rsyslog], # from Sohonet logging module
+      mode    => '0600',
+      owner   => 'root',
+      group   => 'root',
       content => "if \$programname == \'radiusd\' then ${freeradius::fr_logpath}/radius.log\n&~",
     }
   }
@@ -329,38 +339,8 @@ class freeradius (
     }
   }
 
-  logrotate::rule { 'radacct':
-    path          => "${freeradius::fr_logpath}/radacct/*/*.log",
-    rotate_every  => 'day',
-    rotate        => 7,
-    create        => false,
-    missingok     => true,
-    compress      => true,
-    postrotate    => "kill -HUP `cat ${freeradius::fr_pidfile}`",
-    sharedscripts => true,
-  }
-
-  logrotate::rule { 'checkrad':
-    path          => "${freeradius::fr_logpath}/checkrad.log",
-    rotate_every  => 'week',
-    rotate        => 1,
-    create        => true,
-    missingok     => true,
-    compress      => true,
-    postrotate    => "kill -HUP `cat ${freeradius::fr_pidfile}`",
-    sharedscripts => true,
-  }
-
-  logrotate::rule { 'radiusd':
-    path          => "${freeradius::fr_logpath}/radius*.log",
-    rotate_every  => 'week',
-    rotate        => 26,
-    create        => true,
-    missingok     => true,
-    compress      => true,
-    postrotate    => "kill -HUP `cat ${freeradius::fr_pidfile}`",
-    sharedscripts => true,
-  }
+  # Logroate stuff not required because the Debian 9+ package installs the
+  # upstream recommended logroate file into /etc/logrotate.d/freeradius
 
   # Placeholder resource for dh and random as they are dynamically generated, so they
   # exist in the catalogue and don't get purged

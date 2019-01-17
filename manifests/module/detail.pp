@@ -2,15 +2,15 @@
 # == Define: freeradius::module::detail
 #
 define freeradius::module::detail (
-  Enum['present','absent'] $ensure                 = 'present',
-  String $filename                                 = "\${radacctdir}/%{%{Packet-Src-IP-Address}:-%{Packet-Src-IPv6-Address}}/detail-%Y%m%d",
-  Freeradius::Boolean $escape_filenames            = 'no',
-  String $permissions                              = '0600',
-  Optional[String] $group                          = undef,
-  String $header                                   = '%t',
-  Optional[Freeradius::Boolean] $locking           = undef,
-  Optional[Freeradius::Boolean] $log_packet_header = undef,
-  Array[String] $suppress                          = [],
+  $ensure            = 'present',
+  $filename          = "\${radacctdir}/%{%{Packet-Src-IP-Address}:-%{Packet-Src-IPv6-Address}}/detail-%Y%m%d",
+  $escape_filenames  = 'no',
+  $permissions       = '0600',
+  $group             = undef,
+  $header            = '%t',
+  $locking           = undef,
+  $log_packet_header = undef,
+  $suppress          = [],
 ) {
   if $suppress {
     validate_array($suppress)
