@@ -20,7 +20,7 @@ define freeradius::module::perl (
   }
 
   file { "${fr_moduleconfigpath}/perl/${perl_filename}":
-    ensure  => $ensure,
+    ensure  => file,
     owner   => 'root',
     group   => $fr_group,
     mode    => '0640',
