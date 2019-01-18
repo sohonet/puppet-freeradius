@@ -19,7 +19,7 @@ define freeradius::module::perl (
     content => template('freeradius/perl.erb'),
   }
 
-  file { "$moddir/$perl_filename":
+  file { "$moddir":
     ensure  => $ensure,
     owner   => 'root',
     group   => $fr_group,
