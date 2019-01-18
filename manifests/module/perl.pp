@@ -7,7 +7,7 @@ define freeradius::module::perl (
   String $moddir                       = "${fr_moduleconfigpath}/perl",
   Optional[String] $key                = undef,
   Optional[String] $perl_filename      = undef,
-  Optional[String] $source             = "${fr_moduleconfigpath}/${name}/",
+  Optional[String] $source             = undef,
   Optional[String] $content            = undef,
 ) {
   $fr_moduleconfigpath = $::freeradius::params::fr_moduleconfigpath
@@ -24,7 +24,7 @@ define freeradius::module::perl (
     owner   => 'root',
     group   => $fr_group,
     mode    => '0640',
-    #source  => $source,
+    source  => $source,
     content => $content,
     require => Freeradius::Module['perl'],
     notify  => Service[$fr_service],
