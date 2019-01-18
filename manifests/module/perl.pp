@@ -18,9 +18,7 @@ define freeradius::module::perl (
     ensure  => $ensure,
     content => template('freeradius/perl.erb'),
   }
-  notify { 'fr_moduleconfigpath':
-    message => "${fr_moduleconfigpath}",
-  }
+
   file { "${fr_moduleconfigpath}/perl/${perl_filename}":
     ensure  => $ensure,
     owner   => 'root',
