@@ -1,5 +1,14 @@
 ## Changelog
 
+### 3.7.0
+  * Add support for Ubuntu 18.04 LTS (thanks @rogermartensson)
+  * Improved support for Debian 9 (thanks @carlgarner)
+  * Improvements to huntgroups (thanks @amateo)
+  * General bug fixes (thanks @infracaninophile, @coreone and @olivierlm))
+
+### 3.6.0
+  * Add support for Debian 9 (thanks @its-not-a-bug-its-a-feature)
+
 ### 3.5.0
   * Add support for huntgroups (thanks @sts and @phaer)
 

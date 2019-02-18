@@ -1,26 +1,25 @@
 # Base class to install FreeRADIUS
 class freeradius (
-  $control_socket   = false,
-  $max_servers      = '4096',
-  $max_requests     = '4096',
-  $mysql_support    = false,
-  $pgsql_support    = false,
-  $perl_support     = false,
-  $utils_support    = false,
-  $ldap_support     = false,
-  $dhcp_support     = false,
-  $krb5_support     = false,
-  $wpa_supplicant   = false,
-  $winbind_support  = false,
-  $log_destination  = 'files',
-  $syslog           = false,
-  $log_auth         = 'no',
-  $preserve_mods    = true,
-  $correct_escapes  = true,
-  $manage_logpath   = true,
-  $package_ensure   = 'installed',
-  $radacctdir       = $freeradius::params::radacctdir,
-  $extra_client_dir = undef,
+  $control_socket  = false,
+  $max_servers     = '4096',
+  $max_requests    = '4096',
+  $mysql_support   = false,
+  $pgsql_support   = false,
+  $perl_support    = false,
+  $utils_support   = false,
+  $ldap_support    = false,
+  $dhcp_support    = false,
+  $krb5_support    = false,
+  $wpa_supplicant  = false,
+  $winbind_support = false,
+  $log_destination = 'files',
+  $syslog          = false,
+  $log_auth        = 'no',
+  $preserve_mods   = true,
+  $correct_escapes = true,
+  $manage_logpath  = true,
+  $package_ensure  = 'installed',
+  $radacctdir      = $freeradius::params::radacctdir,
 ) inherits freeradius::params {
 
   if $freeradius::fr_version !~ /^3/ {
@@ -61,6 +60,10 @@ class freeradius (
     "${freeradius::fr_basepath}/policy.d",
     "${freeradius::fr_basepath}/dictionary.d",
     "${freeradius::fr_basepath}/scripts",
+    "${freeradius::fr_basepath}/mods-config",
+    "${freeradius::fr_basepath}/mods-config/attr_filter",
+    "${freeradius::fr_basepath}/mods-config/preprocess",
+    "${freeradius::fr_basepath}/mods-config/sql",
   ]:
     ensure  => directory,
     mode    => '0755',
@@ -199,6 +202,22 @@ class freeradius (
     order   => 10,
   }
 
+  # Manage the file permissions for files defined in attr_filter
+  file { [
+    "${freeradius::fr_basepath}/mods-config/attr_filter/access_challenge",
+    "${freeradius::fr_basepath}/mods-config/attr_filter/access_reject",
+    "${freeradius::fr_basepath}/mods-config/attr_filter/accounting_response",
+    "${freeradius::fr_basepath}/mods-config/attr_filter/post-proxy",
+    "${freeradius::fr_basepath}/mods-config/attr_filter/pre-proxy",
+  ]:
+    ensure  => 'present',
+    mode    => '0640',
+    owner   => 'root',
+    group   => $freeradius::fr_group,
+    require => [Package[$freeradius::fr_package], Group[$freeradius::fr_group]],
+    notify  => Service[$freeradius::fr_service],
+  }
+
   # Install a slightly tweaked stock dictionary that includes
   # our custom dictionaries
   concat { "${freeradius::fr_basepath}/dictionary":
@@ -231,6 +250,14 @@ class freeradius (
     order  => 10,
   }
 
+  # Fix the permissions on the hints file
+  file { "${freeradius::fr_basepath}/mods-config/preprocess/hints":
+    ensure  => 'present',
+    mode    => '0640',
+    owner   => 'root',
+    group   => $freeradius::fr_group,
+    require => [Package[$freeradius::fr_package], Group[$freeradius::fr_group]],
+  }
 
   # Install FreeRADIUS packages
   package { 'freeradius':
@@ -353,6 +380,7 @@ class freeradius (
     command => "openssl dhparam -out ${freeradius::fr_basepath}/certs/dh 1024",
     creates => "${freeradius::fr_basepath}/certs/dh",
     path    => '/usr/bin',
+    require => File["${freeradius::fr_basepath}/certs"],
   }
 
   # Generate global SSL parameters
@@ -360,6 +388,7 @@ class freeradius (
     command => "dd if=/dev/urandom of=${freeradius::fr_basepath}/certs/random count=10 >/dev/null 2>&1",
     creates => "${freeradius::fr_basepath}/certs/random",
     path    => '/bin',
+    require => File["${freeradius::fr_basepath}/certs"],
   }
 
   # This exec tests the radius config and fails if it's bad

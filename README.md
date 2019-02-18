@@ -20,6 +20,7 @@
        * [`freeradius::home_server_pool`](#freeradiushomeserverpool)
        * [`freeradius::instantiate`](#freeradiusinstantiate)
        * [`freeradius::ldap`](#freeradiusldap)
+       * [`freeradius::listen`](#freeradiuslisten)
        * [`freeradius::module::ldap`](#freeradiusmoduleldap)
        * [`freeradius::krb5`](#freeradiuskrb5)
        * [`freeradius::module`](#freeradiusmodule)
@@ -424,8 +425,8 @@ and `request`. Default: `undef`.
 
 ##### `home_server`
 
-An array of one or more home servers. The names of the home servers are NOT the hostnames, but the names
-of the sections. (e.g. `home_server foo {...}` has name "foo".
+An array of one or more home servers (this must be an array even if you only have one home server). The names
+of the home servers are NOT the hostnames, but the names of the sections. (e.g. `home_server foo {...}` has name "foo".
 
 Note that ALL home servers listed here have to be of the same type. i.e. they all have to be "auth", or they all have to
 be "acct", or they all have to be "auth+acct".
@@ -467,6 +468,7 @@ freeradius::huntgroup { 'switchaccess':
     'NAS-IP-Address == 192.168.0.1'
   ]
 }
+```
 
 ##### `huntgroup`
 Name of the huntgroup to assign, if conditions are all met. Default to the resource title.
@@ -500,10 +502,10 @@ Configure LDAP support for FreeRADIUS
 Whether the site should be present or not.
 
 ##### `identity`
-LDAP account for searching the directory. Required.
+LDAP account for searching the directory. Optional.
 
 ##### `password`
-Password for the `identity` account. Required.
+Password for the `identity` account. Optional.
 
 ##### `sasl`
 SASL parameters to use for admin binds to the ldap server. This is a hash with 3 possible keys:
@@ -698,6 +700,9 @@ Path to CA cert file for TLS
 ##### `certfile`
 Path to cert file for TLS
 
+##### `capath`
+Path to CA cert files for TLS
+
 ##### `keyfile`
 Path to key file for TLS
 
@@ -735,6 +740,31 @@ Maximum number of connections. Default: `${thread[pool].max_servers}`
 
 ##### `spare`
 Spare connections to be left idle. Default: `${thread[pool].max_spare_servers}`
+
+#### `freeradius::listen`
+
+Define listening interface
+
+##### `type`
+Type of listener. Must be one of `auth`, `acct`, `proxy`, `detail`, `status`, `coa`. Default: `auth`
+
+##### `ip`
+The IPv4 address of the interface to listen. `ip` and `ip6` are mutually exclusive. Default: `undef`
+
+##### `ip6`
+The IPv6 address of the interface to listen. `ip` and `ip6` are mutually exclusive. Default: `undef`
+
+##### `port`
+Default: `undef`
+
+##### `max_connections`
+Default : `16`
+
+##### `lifetime`
+Default : `0`
+
+##### `idle_timeout`
+Default : `30`
 
 #### `freeradius::module`
 
@@ -1224,6 +1254,9 @@ configuration item, instead of specifying both `auth_pool` and `acct_pool`.
 Normally, when an incoming User-Name is matched against the realm, the realm name is "stripped" off, and the "stripped"
 user name is used to perform matches.If you do not want this to happen, set this to `true`. Default: `false`.
 
+##### `order`
+
+Set custom order of realm fragments, otherwise they are automatically ordered alphabetically. Default: `30`
 
 #### `freeradius::script`
 
