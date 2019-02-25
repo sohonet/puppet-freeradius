@@ -62,6 +62,7 @@ define freeradius::module::ldap (
   Integer $lifetime                                                   = 0,
   Integer $idle_timeout                                               = 60,
   Float $connect_timeout                                              = 3.0,
+>>>>>>> master
 ) {
   $fr_package          = $::freeradius::params::fr_package
   $fr_service          = $::freeradius::params::fr_service
