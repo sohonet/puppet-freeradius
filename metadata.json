@@ -10,27 +10,27 @@
   "dependencies": [
     {
       "name": "puppetlabs/stdlib",
-      "version_requirement": ">=4.25.0 <10.0.0"
+      "version_requirement": ">=4.25.0"
     },
     {
       "name": "puppetlabs/firewall",
-      "version_requirement": ">=1.0.0 <7.0.0"
+      "version_requirement": ">=1.0.0"
     },
     {
       "name": "saz/rsyslog",
-      "version_requirement": ">=3.0.0 <6.0.0"
+      "version_requirement": ">=3.0.0"
     },
     {
       "name": "puppet/logrotate",
-      "version_requirement": ">=1.4.0 <8.0.0"
+      "version_requirement": ">=1.4.0"
     },
     {
       "name": "puppetlabs/concat",
-      "version_requirement": ">=1.0.0 <10.0.0"
+      "version_requirement": ">=1.0.0"
     },
     {
       "name": "puppet/systemd",
-      "version_requirement": ">=3.0.0 <6.0.0"
+      "version_requirement": ">=3.0.0"
     }
   ],
   "operatingsystem_support": [
